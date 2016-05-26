@@ -1,0 +1,31 @@
+{
+  "name": "iron-scroll-spy",
+  "version": "0.1",
+  "authors": [
+    "Zecat <jullienfelix@gmail.com>"
+  ],
+  "description": "",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "iron-scroll-spy.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/Zecat/iron-scroll-spy/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#^1.0.6",
+    "iron-selector": "PolymerElements/iron-selector#^1.5.2"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.5.0",
+    "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.6"
+  }
+}

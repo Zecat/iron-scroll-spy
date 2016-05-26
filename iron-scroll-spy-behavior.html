@@ -1,0 +1,53 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-selector/iron-selectable.html">
+<link rel="import" href="../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
+
+<script>
+  /** @polymerBehavior Polymer.IronScrollSpyBehaviorImpl */
+  Polymer.IronScrollSpyBehaviorImpl = {
+
+    attached: function() {
+      this._initCheck();
+    },
+
+    _scrollHandler: function() {
+      if (!this.isDebouncerActive('_scrollSpyCheck')) {
+        this.debounce('_scrollSpyCheck', function() { 
+          this._scrollSpyCheck();
+        }, 200);
+      }
+      
+    },
+
+    _scrollSpyCheck: function() {
+      var scrollTop = this.scrollTarget.scrollTop;
+      if (this.lowerThreshold != null && scrollTop > this.lowerThreshold) {
+        this.selected++;
+        this._updateTriggers();
+      } else if (this.upperThreshold != null && scrollTop < this.upperThreshold) {
+        this.selected--;
+        this._updateTriggers();
+      }
+    },
+
+    _updateTriggers: function() {
+      this.upperThreshold = this.selected ? this.selectedItem.offsetTop - this.scrollTarget.clientHeight/2: null;
+      this.lowerThreshold = (this.selected != this.items.length -1) ? 
+        this.selectedItem.offsetTop + this.selectedItem.clientHeight - this.scrollTarget.clientHeight + this.scrollTarget.clientHeight/2: null;
+    },
+
+    _initCheck: function() {
+      this.selected = 0;
+      this._updateTriggers();
+    }
+
+  }
+
+    /** @polymerBehavior */
+  Polymer.IronScrollSpyBehavior = [
+    Polymer.IronSelectableBehavior,
+    Polymer.IronScrollTargetBehavior,
+    Polymer.IronScrollSpyBehaviorImpl
+  ];
+
+</script>
