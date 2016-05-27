@@ -6,8 +6,8 @@
   /** @polymerBehavior Polymer.IronScrollSpyBehaviorImpl */
   Polymer.IronScrollSpyBehaviorImpl = {
 
-    attached: function() {
-      this._initCheck();
+    listeners: {
+      'iron-items-changed': '_initCheck'
     },
 
     _scrollHandler: function() {
