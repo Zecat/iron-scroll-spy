@@ -33,22 +33,25 @@
     _scrollSpyCheck: function() {
       var scrollTop = this.scrollTarget.scrollTop;
       if (this.lowerThreshold != null && scrollTop > this.lowerThreshold) {
-        this.selected++;
+        this.selectIndex(this.indexOf(this.selectedItem) + 1);
         this._updateTriggers();
       } else if (this.upperThreshold != null && scrollTop < this.upperThreshold) {
-        this.selected--;
+        this.selectIndex(this.indexOf(this.selectedItem) - 1);
         this._updateTriggers();
       }
     },
 
     _updateTriggers: function() {
-      this.upperThreshold = this.selected ? this.selectedItem.offsetTop - this.scrollTarget.clientHeight/2: null;
-      this.lowerThreshold = (this.selected != this.items.length -1) ? 
-        this.selectedItem.offsetTop + this.selectedItem.clientHeight - this.scrollTarget.clientHeight + this.scrollTarget.clientHeight/2: null;
+      var index = this.indexOf(this.selectedItem);
+      var selectedTop = this.selectedItem.offsetTop;
+      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+      this.upperThreshold = index ? selectedTop - scrollTargetHalfHeight: null;
+      this.lowerThreshold = (index != this.items.length -1) ? 
+        selectedTop + this.selectedItem.clientHeight - scrollTargetHalfHeight: null;
     },
 
     _initCheck: function() {
-      this.selected = 0;
+      this.selectIndex(0);
       this._updateTriggers();
     }
 
