@@ -6,12 +6,23 @@
   /** @polymerBehavior Polymer.IronScrollSpyBehaviorImpl */
   Polymer.IronScrollSpyBehaviorImpl = {
 
+    properties: {
+      /**
+       * When true, the selection is not updated anymore from the scroll event.
+       * @type {Boolean}
+       */
+      disabled: {
+        type: Boolean,
+        value: false
+      }
+    },
+
     listeners: {
       'iron-items-changed': '_initCheck'
     },
 
     _scrollHandler: function() {
-      if (!this.isDebouncerActive('_scrollSpyCheck')) {
+      if (!this.disabled && !this.isDebouncerActive('_scrollSpyCheck')) {
         this.debounce('_scrollSpyCheck', function() { 
           this._scrollSpyCheck();
         }, 200);
