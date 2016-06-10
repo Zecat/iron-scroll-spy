@@ -8,44 +8,106 @@
 
     properties: {
       /**
-       * When true, the selection is not updated anymore from the scroll event.
-       * @type {Boolean}
+       * When true, the selection is not updated anymore from the scroll event. When disabled became false again, 'selected' updates itself.
        */
-      disabled: {
+      spyDisabled: {
         type: Boolean,
         value: false,
-        observer: '_disableChanged'
-      }
+        observer: '_spyDisableChanged'
+      },
+      /**
+       * The scroll duration (ms) when selected change.
+       */
+      scrollDuration: {
+        type: Number,
+        value: 300
+      },     
+      /**
+       * When true, the scroll target will not auto scroll to the selected item.
+       */
+      _autoScrollDisabled: {
+        type: Boolean,
+        value: false,
+        observer: '_autoScrollDisabledChanged',
+        readOnly: true
+      },
     },
 
     listeners: {
       'iron-items-changed': '_initCheck'
     },
 
-    _disableChanged: function(newValue, oldValue) {
+    _autoScrollDisabledChanged: function(newValue, oldValue) {
+      if (newValue) {
+        this.unlisten(this, 'iron-select', '_scrollToSelected');
+      } else {
+        this.listen(this, 'iron-select', '_scrollToSelected');
+      }
+    },
+
+    _scrollToSelected: function() {
+      if (this.selectedItem) {
+        // TODO: use CSS scroll-behavior once supported.
+        this._smoothScroll(this.selectedItem.offsetTop, this.scrollDuration);
+      }
+    },
+    /**
+     * Perform a easing scroll animation in the scroll target during which scroll spy is disabled.
+     * @param  {Number} top      Top position to scroll to.
+     * @param  {Number} duration Scroll duration (ms)
+     */
+    _smoothScroll: function(top, duration) {
+      var easingFn = function easeOutQuad(t, b, c, d) {
+        t /= d;
+        return -c * t*(t-2) + b;
+      };
+      var startTime = Date.now();
+      var currentScrollTop = this._scrollTop;
+      var deltaScrollTop = top - currentScrollTop;
+      var oldSpyDisabled = this.spyDisabled;
+      this.spyDisabled = true;
+      (function updateFrame() {
+        var now = Date.now();
+        var elapsedTime = now - startTime;
+        if (elapsedTime > duration) {
+          this.scroll(0, top);
+          this.spyDisabled = oldSpyDisabled;
+        } else {
+          this.scroll(0, Math.round(easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration)));
+          requestAnimationFrame(updateFrame.bind(this));
+        }
+      }).call(this);
+    },
+
+    _spyDisableChanged: function(newValue, oldValue) {
       if (oldValue && !newValue) {
         this._updateTriggers();
       }
     },
 
     _scrollHandler: function() {
-      if (!this.disabled && !this.isDebouncerActive('_scrollSpyCheck')) {
+      if (!this.spyDisabled && !this.isDebouncerActive('_scrollSpyCheck')) {
         this.debounce('_scrollSpyCheck', function() { 
           this._scrollSpyCheck();
         }, 200);
-      }
-      
+      } 
     },
 
     _scrollSpyCheck: function() {
       var scrollTop = this.scrollTarget.scrollTop;
       if (this.lowerThreshold != null && scrollTop > this.lowerThreshold) {
-        this.selectIndex(this.indexOf(this.selectedItem) + 1);
-        this._updateTriggers();
+        this._updateSelectedIndex(this.indexOf(this.selectedItem) + 1);
       } else if (this.upperThreshold != null && scrollTop < this.upperThreshold) {
-        this.selectIndex(this.indexOf(this.selectedItem) - 1);
-        this._updateTriggers();
+        this._updateSelectedIndex(this.indexOf(this.selectedItem) - 1);
       }
+    },
+
+    _updateSelectedIndex: function(index) {
+      var oldAutoScrollDisabled = this._autoScrollDisabled;
+      this._set_autoScrollDisabled(true);
+      this.selectIndex(index);
+      this._updateTriggers();
+      this._set_autoScrollDisabled(oldAutoScrollDisabled);
     },
 
     _updateTriggers: function() {
@@ -58,10 +120,10 @@
     },
 
     _initCheck: function() {
+      //TODO: select the current item in the viewport.
       this.selectIndex(0);
       this._updateTriggers();
     }
-
   }
 
     /** @polymerBehavior */
