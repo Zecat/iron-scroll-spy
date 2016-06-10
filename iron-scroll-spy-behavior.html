@@ -13,12 +13,19 @@
        */
       disabled: {
         type: Boolean,
-        value: false
+        value: false,
+        observer: '_disableChanged'
       }
     },
 
     listeners: {
       'iron-items-changed': '_initCheck'
+    },
+
+    _disableChanged: function(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        this._updateTriggers();
+      }
     },
 
     _scrollHandler: function() {
