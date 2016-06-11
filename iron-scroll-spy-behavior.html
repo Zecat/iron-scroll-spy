@@ -111,12 +111,14 @@
     },
 
     _updateTriggers: function() {
-      var index = this.indexOf(this.selectedItem);
-      var selectedTop = this.selectedItem.offsetTop;
-      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
-      this.upperThreshold = index ? selectedTop - scrollTargetHalfHeight: null;
-      this.lowerThreshold = (index != this.items.length -1) ? 
-        selectedTop + this.selectedItem.clientHeight - scrollTargetHalfHeight: null;
+      if (this.selectedItem) {
+        var index = this.indexOf(this.selectedItem);
+        var selectedTop = this.selectedItem.offsetTop;
+        var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+        this.upperThreshold = index ? selectedTop - scrollTargetHalfHeight: null;
+        this.lowerThreshold = (index != this.items.length -1) ? 
+          selectedTop + this.selectedItem.clientHeight - scrollTargetHalfHeight: null;
+      }
     },
 
     _initCheck: function() {
