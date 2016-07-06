@@ -94,10 +94,9 @@
     },
 
     _scrollSpyCheck: function() {
-      var scrollTop = this.scrollTarget.scrollTop;
-      if (this.lowerThreshold != null && scrollTop > this.lowerThreshold) {
+      if (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) {
         this._updateSelectedIndex(this.indexOf(this.selectedItem) + 1);
-      } else if (this.upperThreshold != null && scrollTop < this.upperThreshold) {
+      } else if (this.upperThreshold != null && this._scrollTop < this.upperThreshold) {
         this._updateSelectedIndex(this.indexOf(this.selectedItem) - 1);
       }
     },
