@@ -40,10 +40,12 @@
         this.fire('iron-scroll-spy-activate');
         this.selectIndex(this.indexOf(this.selectedItem) + 1);
         this._updateTriggers();
+        this._scrollSpyCheck();
       } else if (this.upperThreshold != null && this._scrollTop < this.upperThreshold) {
         this.fire('iron-scroll-spy-activate');
         this.selectIndex(this.indexOf(this.selectedItem) - 1);
         this._updateTriggers();
+        this._scrollSpyCheck();
       }
     },
 
