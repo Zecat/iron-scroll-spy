@@ -1,0 +1,51 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-selector/iron-selectable.html">
+<link rel="import" href="../iron-auto-scroll/iron-auto-scroll-behavior.html">
+<link rel="import" href="../iron-scroll-spy/iron-scroll-spy-behavior.html">
+
+<script>
+  /** @polymerBehavior Polymer.IronAutoScrollSpyBehavior */
+  Polymer.IronAutoScrollSpyBehaviorImpl = {
+
+    observers: [
+      '_disableSpyWhileScrolling(scrolling)'
+    ],
+
+    listeners: {
+      'iron-scroll-spy-activate': '_cancelNextScroll',
+      'iron-select': '_resetAutoScrollDisabled',
+
+    },
+
+    _cancelNextScroll: function() {
+      this._savedAutoScrollDisabled = this.autoScrollDisabled;
+      this.autoScrollDisabled = true;
+      this._shouldResetAutoScrollDisabled = true;
+    },
+
+    _disableSpyWhileScrolling: function(scrolling) {
+      if (scrolling) {
+        this._savedSpyDisabled = this.spyDisabled;
+        this.spyDisabled = true;
+      } else if (this._savedSpyDisabled != undefined) {
+        this.spyDisabled = this._savedSpyDisabled;
+      }
+    },
+
+    _resetAutoScrollDisabled: function() {
+      if (this._shouldResetAutoScrollDisabled) {
+        this.autoScrollDisabled = this._savedAutoScrollDisabled;
+        this._shouldResetAutoScrollDisabled = false;
+      }
+    }
+    
+  }
+
+  /** @polymerBehavior */
+  Polymer.IronAutoScrollSpyBehavior = [
+    Polymer.IronAutoScrollBehavior,
+    Polymer.IronScrollSpyBehavior,
+    Polymer.IronAutoScrollSpyBehaviorImpl
+  ];
+
+</script>

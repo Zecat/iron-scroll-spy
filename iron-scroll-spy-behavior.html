@@ -14,69 +14,11 @@
         type: Boolean,
         value: false,
         observer: '_spyDisableChanged'
-      },
-      /**
-       * The scroll duration (ms) when selected change.
-       */
-      scrollDuration: {
-        type: Number,
-        value: 300
-      },     
-      /**
-       * When true, the scroll target will not auto scroll to the selected item.
-       */
-      _autoScrollDisabled: {
-        type: Boolean,
-        value: false,
-        observer: '_autoScrollDisabledChanged',
-        readOnly: true
-      },
+      }
     },
 
     listeners: {
       'iron-items-changed': '_initCheck'
-    },
-
-    _autoScrollDisabledChanged: function(newValue, oldValue) {
-      if (newValue) {
-        this.unlisten(this, 'iron-select', '_scrollToSelected');
-      } else {
-        this.listen(this, 'iron-select', '_scrollToSelected');
-      }
-    },
-
-    _scrollToSelected: function() {
-      if (this.selectedItem) {
-        // TODO: use CSS scroll-behavior once supported.
-        this._smoothScroll(this.selectedItem.offsetTop, this.scrollDuration);
-      }
-    },
-    /**
-     * Perform a easing scroll animation in the scroll target during which scroll spy is disabled.
-     * @param  {Number} top      Top position to scroll to.
-     * @param  {Number} duration Scroll duration (ms)
-     */
-    _smoothScroll: function(top, duration) {
-      var easingFn = function easeOutQuad(t, b, c, d) {
-        t /= d;
-        return -c * t*(t-2) + b;
-      };
-      var startTime = Date.now();
-      var currentScrollTop = this._scrollTop;
-      var deltaScrollTop = top - currentScrollTop;
-      var oldSpyDisabled = this.spyDisabled;
-      this.spyDisabled = true;
-      (function updateFrame() {
-        var now = Date.now();
-        var elapsedTime = now - startTime;
-        if (elapsedTime > duration) {
-          this.scroll(0, top);
-          this.spyDisabled = oldSpyDisabled;
-        } else {
-          this.scroll(0, Math.round(easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration)));
-          requestAnimationFrame(updateFrame.bind(this));
-        }
-      }).call(this);
     },
 
     _spyDisableChanged: function(newValue, oldValue) {
@@ -95,18 +37,14 @@
 
     _scrollSpyCheck: function() {
       if (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) {
-        this._updateSelectedIndex(this.indexOf(this.selectedItem) + 1);
+        this.fire('iron-scroll-spy-activate');
+        this.selectIndex(this.indexOf(this.selectedItem) + 1);
+        this._updateTriggers();
       } else if (this.upperThreshold != null && this._scrollTop < this.upperThreshold) {
-        this._updateSelectedIndex(this.indexOf(this.selectedItem) - 1);
+        this.fire('iron-scroll-spy-activate');
+        this.selectIndex(this.indexOf(this.selectedItem) - 1);
+        this._updateTriggers();
       }
-    },
-
-    _updateSelectedIndex: function(index) {
-      var oldAutoScrollDisabled = this._autoScrollDisabled;
-      this._set_autoScrollDisabled(true);
-      this.selectIndex(index);
-      this._updateTriggers();
-      this._set_autoScrollDisabled(oldAutoScrollDisabled);
     },
 
     _updateTriggers: function() {
