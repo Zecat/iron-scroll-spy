@@ -14,6 +14,13 @@
         type: Boolean,
         value: false,
         observer: '_spyDisableChanged'
+      },
+      /**
+       * For performance reason, calls to the `spyCheck` method are debounced according to `spyCheckFrequence`'s value (ms).
+       */
+      spyCheckFrequence: {
+        type: Number,
+        value: 200
       }
     },
 
@@ -28,24 +35,23 @@
     },
 
     _scrollHandler: function() {
-      if (!this.spyDisabled && !this.isDebouncerActive('_scrollSpyCheck')) {
-        this.debounce('_scrollSpyCheck', function() { 
-          this._scrollSpyCheck();
-        }, 200);
+      if (!this.spyDisabled && !this.isDebouncerActive('spyCheck')) {
+        this.debounce('spyCheck', function() { 
+          this.spyCheck();
+        }, this.spyCheckFrequence);
       } 
     },
-
-    _scrollSpyCheck: function() {
-      if (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) {
+    /**
+     * Check if an item as been reach by the scroll and should be selected. This method will be called automatically as the scroll-target is scrolled.
+     */
+    spyCheck: function() {
+      var progress = (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) ? 1 :
+      ( (this.upperThreshold != null && this._scrollTop < this.upperThreshold) ? -1 : 0 );
+      if (progress) {
         this.fire('iron-scroll-spy-activate');
-        this.selectIndex(this.indexOf(this.selectedItem) + 1);
+        progress > 0 ? this.selectNext() : this.selectPrevious();
         this._updateTriggers();
-        this._scrollSpyCheck();
-      } else if (this.upperThreshold != null && this._scrollTop < this.upperThreshold) {
-        this.fire('iron-scroll-spy-activate');
-        this.selectIndex(this.indexOf(this.selectedItem) - 1);
-        this._updateTriggers();
-        this._scrollSpyCheck();
+        this.spyCheck();
       }
     },
 
