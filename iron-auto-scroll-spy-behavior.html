@@ -8,22 +8,25 @@
   Polymer.IronAutoScrollSpyBehaviorImpl = {
 
     observers: [
-      '_disableSpyWhileScrolling(scrolling)'
+      '_disableSpyWhileAutoScrolling(autoScrolling)'
     ],
 
     listeners: {
-      'iron-scroll-spy-activate': '_cancelNextScroll',
+      'iron-scroll-spy-activate': '_cancelNextAutoScroll',
       'iron-select': '_resetAutoScrollDisabled'
     },
 
-    _cancelNextScroll: function() {
+    _savedAutoScrollDisabled: false,
+    _shouldResetAutoScrollDisabled: false,
+
+    _cancelNextAutoScroll: function() {
       this._savedAutoScrollDisabled = this.autoScrollDisabled;
       this.autoScrollDisabled = true;
       this._shouldResetAutoScrollDisabled = true;
     },
 
-    _disableSpyWhileScrolling: function(scrolling) {
-      if (scrolling) {
+    _disableSpyWhileAutoScrolling: function(autoScrolling) {
+      if (autoScrolling) {
         this._savedSpyDisabled = this.spyDisabled;
         this.spyDisabled = true;
       } else if (this._savedSpyDisabled != undefined) {

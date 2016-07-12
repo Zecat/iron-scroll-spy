@@ -20,17 +20,19 @@
        */
       spyCheckFrequence: {
         type: Number,
-        value: 200
+        value: 300
       }
     },
 
     listeners: {
-      'iron-items-changed': '_initCheck'
+      'iron-items-changed': 'reset'
     },
+
+    _spyImmediateSelectedIndex: null,
 
     _spyDisableChanged: function(newValue, oldValue) {
       if (oldValue && !newValue) {
-        this._updateTriggers();
+        this.reset();
       }
     },
 
@@ -41,6 +43,7 @@
         }, this.spyCheckFrequence);
       } 
     },
+
     /**
      * Check if an item as been reach by the scroll and should be selected. This method will be called automatically as the scroll-target is scrolled.
      */
@@ -48,28 +51,45 @@
       var progress = (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) ? 1 :
       ( (this.upperThreshold != null && this._scrollTop < this.upperThreshold) ? -1 : 0 );
       if (progress) {
-        this.fire('iron-scroll-spy-activate');
-        progress > 0 ? this.selectNext() : this.selectPrevious();
+        this._spyImmediateSelectedIndex += progress;
         this._updateTriggers();
         this.spyCheck();
+        return;
+      }
+      this._applySpySelection();
+    },
+    _applySpySelection: function() {
+      if (this.indexOf(this.selectedItem) != this._spyImmediateSelectedIndex) {
+        this.fire('iron-scroll-spy-activate');
+        this.selectIndex(this._spyImmediateSelectedIndex);
       }
     },
-
     _updateTriggers: function() {
-      if (this.selectedItem) {
-        var index = this.indexOf(this.selectedItem);
-        var selectedTop = this.selectedItem.offsetTop;
-        var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
-        this.upperThreshold = index ? selectedTop - scrollTargetHalfHeight: null;
-        this.lowerThreshold = (index != this.items.length -1) ? 
-          selectedTop + this.selectedItem.clientHeight - scrollTargetHalfHeight: null;
+      var immediateItem = this.items[this._spyImmediateSelectedIndex];
+      if (!immediateItem) {
+        return;
       }
+      var immediateTop = immediateItem.offsetTop;
+      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+      this.upperThreshold = this._spyImmediateSelectedIndex ? immediateTop - scrollTargetHalfHeight: null;
+      this.lowerThreshold = (this._spyImmediateSelectedIndex != this.items.length - 1) ? 
+        immediateTop + immediateItem.clientHeight - scrollTargetHalfHeight: null;
     },
-
-    _initCheck: function() {
-      //TODO: select the current item in the viewport.
-      this.selectIndex(0);
+    reset: function() {
+      this._spyImmediateSelectedIndex = this._findSpiedIndex();
       this._updateTriggers();
+      this._applySpySelection();
+    },
+    _findSpiedIndex: function() {
+      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+      for (item of this.items) {
+        var top = item.offsetTop;
+        var height = item.clientHeight;
+        if ( (this._scrollTop > top - scrollTargetHalfHeight)
+          && (this._scrollTop < top + height - scrollTargetHalfHeight) ) {
+          return this.indexOf(item);
+        }
+      }
     }
   }
 
