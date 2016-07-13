@@ -19,7 +19,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       body {
         margin: 0;
-        height: 100vh;
       }
       iron-scroll-spy div {
         padding: 180px;
@@ -27,24 +26,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       iron-scroll-spy div.iron-selected {
         background: lightgrey;
       }
+      #scrollTarget {
+        overflow: auto;
+        height: 100vh;
+      }
   </style>
   <body unresolved>
 
     <template is="dom-bind" id="scope">
-      <iron-scroll-spy selected="{{scrollSelected}}" id="scrollSpy">
-        <div>
-          <h1>Section A</h1>
-        </div>
-        <div>
-          <h1>Section B</h1>
-        </div>
-        <div>
-          <h1>Section C</h1>
-        </div>
-        <div>
-          <h1>Section D</h1>
-        </div>
-      </iron-scroll-spy>
+      <div id="scrollTarget">
+        <iron-scroll-spy scroll-target="scrollTarget" id="scrollSpy">
+          <div>
+            <h1>Section A</h1>
+          </div>
+          <div>
+            <h1>Section B</h1>
+          </div>
+          <div>
+            <h1>Section C</h1>
+          </div>
+          <div>
+            <h1>Section D</h1>
+          </div>
+        </iron-scroll-spy>
+      </div>
     </template>
 
   </body>
