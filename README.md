@@ -6,7 +6,7 @@ Change the selected attribute will result in a smooth scroll to the associated e
 
 ## demo & doc
 
-See [component page](http://zecat.github.io/iron-scroll-spy)
+See [component page](http://zecat.github.io/iron-scroll-spy/components/iron-scroll-spy/#iron-auto-scroll-spy)
 
 ## installation
 
