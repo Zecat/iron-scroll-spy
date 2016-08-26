@@ -15,42 +15,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <title>iron-scroll-spy Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="../iron-scroll-spy.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   </head>
-    <style>
+    <style is="custom-style">
       body {
         margin: 0;
       }
-      iron-scroll-spy div {
-        padding: 180px;
-      }
-      iron-scroll-spy div.iron-selected {
-        background: lightgrey;
-      }
-      #scrollTarget {
-        overflow: auto;
-        height: 100vh;
+      demo-snippet {
+        margin-top: 50px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        --demo-snippet-demo: {
+          padding: 0;
+        };
       }
   </style>
   <body unresolved>
 
-    <template is="dom-bind" id="scope">
-      <div id="scrollTarget">
-        <iron-scroll-spy scroll-target="scrollTarget" id="scrollSpy">
-          <div>
-            <h1>Section A</h1>
-          </div>
-          <div>
-            <h1>Section B</h1>
-          </div>
-          <div>
-            <h1>Section C</h1>
-          </div>
-          <div>
-            <h1>Section D</h1>
-          </div>
+    <demo-snippet class="centered">
+      <template>
+        <style>
+          #scrollSpy {
+            height: 500px;
+          }
+          #scrollSpy div {
+            padding: 120px;
+          }
+          #scrollSpy div.iron-selected {
+            background: #ececec;
+          }
+        </style>
+
+        <iron-scroll-spy id="scrollSpy" activate-event="">
+          <div> <h1>Section A</h1> </div>
+          <div> <h1>Section B</h1> </div>
+          <div> <h1>Section C</h1> </div>
+          <div> <h1>Section D</h1> </div>
+          <div> <h1>Section E</h1> </div>
+          <div> <h1>Section F</h1> </div>
+          <div> <h1>Section G</h1> </div>
+          <div> <h1>Section H</h1> </div>
         </iron-scroll-spy>
-      </div>
-    </template>
+      </template>
+    </demo-snippet>
 
   </body>
 </html>
