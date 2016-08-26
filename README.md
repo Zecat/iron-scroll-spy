@@ -1,8 +1,8 @@
 # iron-scroll-spy
 
-iron-scroll-spy is a container for a vertical list of elements.
-Specify the scroll-target and it will select the current element in the viewport as the scroll change.
-Change the selected attribute will result in a smooth scroll to the associated element.
+`iron-scroll-spy` is a container for a vertical list of elements, it observers the scroll in the scroll-target (if not specified, default to iron-scroll-spy itself) and select an element when it pass the middle of the scroll-target viewport.
+
+Using iron-auto-scroll-spy, it also listen to change of the `selected` attribute and automatically scroll to the selected item.
 
 ## demo & doc
 
