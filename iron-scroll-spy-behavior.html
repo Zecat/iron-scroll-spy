@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-selector/iron-selectable.html">
 <link rel="import" href="../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
 <script>
   /** @polymerBehavior Polymer.IronScrollSpyBehavior */
@@ -25,23 +26,20 @@
     },
 
     listeners: {
-      'iron-items-changed': 'reset'
+      'iron-items-changed': '_resetDebounced',
+      'iron-resize': '_resetDebounced'
     },
+
+    observers: [
+      '_resetDebounced(scrollTarget)'
+    ],
 
     _spyImmediateSelectedIndex: null,
 
-    _spyDisableChanged: function(newValue, oldValue) {
-      if (oldValue && !newValue) {
-        this.reset();
-      }
-    },
-
-    _scrollHandler: function() {
-      if (!this.spyDisabled && !this.isDebouncerActive('spyCheck')) {
-        this.debounce('spyCheck', function() { 
-          this.spyCheck();
-        }, this.spyCheckFrequence);
-      } 
+    reset: function() {
+      this._spyImmediateSelectedIndex = this._findSpiedIndex();
+      this._updateTriggers();
+      this._applySpySelection();
     },
 
     /**
@@ -75,10 +73,8 @@
       this.lowerThreshold = (this._spyImmediateSelectedIndex != this.items.length - 1) ? 
         immediateTop + immediateItem.clientHeight - scrollTargetHalfHeight: null;
     },
-    reset: function() {
-      this._spyImmediateSelectedIndex = this._findSpiedIndex();
-      this._updateTriggers();
-      this._applySpySelection();
+    _resetDebounced: function() {
+      this.debounce('iron-scroll-spy-reset', this.reset);
     },
     _findSpiedIndex: function() {
       var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
@@ -90,7 +86,21 @@
           return this.indexOf(item);
         }
       }
-    }
+    },
+
+    _spyDisableChanged: function(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        this.reset();
+      }
+    },
+
+    _scrollHandler: function() {
+      if (!this.spyDisabled && !this.isDebouncerActive('spyCheck')) {
+        this.debounce('spyCheck', function() { 
+          this.spyCheck();
+        }, this.spyCheckFrequence);
+      } 
+    },
 
     /**
      * The default scroll target is defined as the element it-self.
@@ -103,6 +113,7 @@
   /** @polymerBehavior */
   Polymer.IronScrollSpyBehavior = [
     Polymer.IronSelectableBehavior,
+    Polymer.IronResizableBehavior,
     Polymer.IronScrollTargetBehavior,
     Polymer.IronScrollSpyBehaviorImpl
   ];
