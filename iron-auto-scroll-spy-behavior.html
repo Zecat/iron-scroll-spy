@@ -12,17 +12,18 @@
     ],
 
     listeners: {
-      'iron-scroll-spy-activate': '_cancelNextAutoScroll',
-      'iron-select': '_resetAutoScrollDisabled'
+      'iron-scroll-spy-activate': '_cancelNextAutoScroll'
     },
 
-    _savedAutoScrollDisabled: false,
-    _shouldResetAutoScrollDisabled: false,
-
     _cancelNextAutoScroll: function() {
-      this._savedAutoScrollDisabled = this.autoScrollDisabled;
+      if (this.autoScrollDisabled) {
+        return;
+      }
+      var _savedAutoScrollDisabled = this.autoScrollDisabled;
       this.autoScrollDisabled = true;
-      this._shouldResetAutoScrollDisabled = true;
+      this.async(function() {
+        this.autoScrollDisabled = _savedAutoScrollDisabled;
+      }, this.scrollDuration);
     },
 
     _disableSpyWhileAutoScrolling: function(autoScrolling) {
@@ -31,13 +32,6 @@
         this.spyDisabled = true;
       } else if (this._savedSpyDisabled != undefined) {
         this.spyDisabled = this._savedSpyDisabled;
-      }
-    },
-
-    _resetAutoScrollDisabled: function() {
-      if (this._shouldResetAutoScrollDisabled) {
-        this.autoScrollDisabled = this._savedAutoScrollDisabled;
-        this._shouldResetAutoScrollDisabled = false;
       }
     }
     
