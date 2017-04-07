@@ -78,7 +78,8 @@
     },
     _findSpiedIndex: function() {
       var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
-      for (item of this.items) {
+      for (var i in this.items) {
+        var item = this.items[i];
         var top = item.offsetTop;
         var height = item.clientHeight;
         if ( (this._scrollTop > top - scrollTargetHalfHeight)
