@@ -4,6 +4,8 @@
 
 Using iron-auto-scroll-spy, it also listen to change of the `selected` attribute and automatically scroll to the selected item.
 
+**Check out the 2.0-preview branch for Polymer 2!**
+
 ## demo & doc
 
 See [component page](http://zecat.github.io/iron-scroll-spy/components/iron-scroll-spy/#iron-auto-scroll-spy)
