@@ -14,13 +14,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>iron-auto-scroll-spy Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../iron-auto-scroll-spy.html">
+    <link rel="import" href="../../polymer/lib/elements/custom-style.html">
+    <link rel="import" href="../../shadycss/apply-shim.html">
+    <link rel="import" href="../../paper-styles/typography.html">
     <link rel="import" href="../../paper-tabs/paper-tabs.html">
     <link rel="import" href="../../paper-tabs/paper-tab.html">
     <link rel="import" href="../../app-layout/app-header-layout/app-header-layout.html">
     <link rel="import" href="../../app-layout/app-header/app-header.html">
     <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../iron-auto-scroll-spy.html">
   </head>
 
   <custom-style>
@@ -28,8 +31,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       body {
         margin: 0;
         height: 100vh;
+        @apply --paper-font-common-base;
       }
-      
       demo-snippet {
         --demo-snippet-demo: {
           padding: 0;
@@ -44,10 +47,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <template>
         <dom-bind id="scope">
           <template>
-
-            <style>
+            
+            <style is="custom-style">
               app-header {
-                background: #fafafa;
+                background: var(--primary-color);
+                color: white;
               }
               iron-auto-scroll-spy {
                 height: 500px;
