@@ -1,0 +1,65 @@
+<link rel="import" href="../iron-selector/iron-selectable.html">
+<link rel="import" href="../iron-auto-scroll/iron-auto-scroll-mixin.html">
+<link rel="import" href="iron-scroll-spy-mixin.html">
+
+<script>
+
+  if (!window.Zecat) {
+    window.Zecat = {};
+  }
+  
+  /**
+   * 
+   * 
+   * @polymer
+   * @mixinFunction
+   * @appliesMixin Zecat.IronAutoScrollMixin
+   * @appliesMixin Zecat.IronScrollSpyMixin
+   */
+  Zecat.IronAutoScrollSpyMixin = (superClass) =>
+    class extends Zecat.IronScrollSpyMixin(Zecat.IronAutoScrollMixin(superClass)) {
+
+    static get observers() {
+      return [
+        '_disableSpyWhileAutoScrolling(autoScrolling)'
+      ];
+    }
+
+    constructor() {
+      super();
+      this._cancelNextAutoScroll_boundListener = this._cancelNextAutoScroll.bind(this);
+      this.addEventListener('iron-scroll-spy-activate', this._cancelNextAutoScroll_boundListener);
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.removeEventListener('iron-scroll-spy-activate', this._cancelNextAutoScroll_boundListener);
+    }
+
+    _cancelNextAutoScroll() {
+      if (this.autoScrollDisabled) {
+        return;
+      }
+      var _savedAutoScrollDisabled = this.autoScrollDisabled;
+      this.autoScrollDisabled = true;
+      setTimeout(() => {
+        this.autoScrollDisabled = _savedAutoScrollDisabled;
+      }, this.scrollDuration);
+    }
+
+    _disableSpyWhileAutoScrolling(autoScrolling) {
+      if (autoScrolling) {
+        this._savedSpyDisabled = this.spyDisabled;
+        this.spyDisabled = true;
+      } else if (this._savedSpyDisabled != undefined) {
+        this.spyDisabled = this._savedSpyDisabled;
+      }
+    }
+    
+  }
+
+</script>

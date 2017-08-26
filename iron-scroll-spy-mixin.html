@@ -1,0 +1,161 @@
+<link rel="import" href="../polymer/lib/utils/debounce.html">
+<link rel="import" href="../iron-selector/iron-selectable.html">
+<link rel="import" href="../iron-scroll-target-behavior/iron-scroll-target-behavior.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
+<script>
+
+  if (!window.Zecat) {
+    window.Zecat = {};
+  }
+  
+  /**
+   * 
+   * 
+   * @polymer
+   * @mixinFunction
+   * @appliesMixin Polymer.IronSelectableBehavior
+   * @appliesMixin Polymer.IronResizableBehavior
+   * @appliesMixin Polymer.IronScrollTargetBehavior
+   */
+  Zecat.IronScrollSpyMixin = (superClass) =>
+    class extends Polymer.mixinBehaviors([
+        Polymer.IronSelectableBehavior,
+        Polymer.IronResizableBehavior,
+        Polymer.IronScrollTargetBehavior
+      ],
+      superClass
+    ) {
+
+    static get properties() {
+      return  {
+        /**
+         * When true, the selection is not updated anymore from the scroll event. When disabled became false again, 'selected' updates itself.
+         */
+        spyDisabled: {
+          type: Boolean,
+          value: false,
+          observer: '_spyDisableChanged'
+        },
+        /**
+         * For performance reason, calls to the `spyCheck` method are debounced according to `spyCheckFrequence`'s value (ms).
+         */
+        spyCheckFrequence: {
+          type: Number,
+          value: 300
+        }
+      };
+    }
+
+    static get observers() {
+      return [
+        '_resetDebounced(scrollTarget)'
+      ];
+    }
+
+    /**
+     * The default scroll target is defined as the element it-self.
+     */
+    get _defaultScrollTarget() { return this; }
+
+    constructor() {
+      super();
+      this._spyCheckDebouncer = {
+        isActive: () => false
+      }
+      this._spyImmediateSelectedIndex = null;
+      this._resetDebounced_boundListener = this._resetDebounced.bind(this);
+      this.addEventListener('iron-items-changed', this._resetDebounced_boundListener);
+      this.addEventListener('iron-resize', this._resetDebounced_boundListener);
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.removeEventListener('iron-items-changed', this._resetDebounced_boundListener);
+      this.removeEventListener('iron-resize', this._resetDebounced_boundListener);
+    }
+
+    reset() {
+      this._spyImmediateSelectedIndex = this._findSpiedIndex();
+      this._updateTriggers();
+      this._applySpySelection();
+    }
+
+    /**
+     * Check if an item as been reach by the scroll and should be selected.
+     * This method will be called automatically as the scroll-target is scrolled.
+     */
+    spyCheck() {
+      var progress = (this.lowerThreshold != null && this._scrollTop > this.lowerThreshold) ? 1 :
+      ( (this.upperThreshold != null && this._scrollTop < this.upperThreshold) ? -1 : 0 );
+      if (progress) {
+        this._spyImmediateSelectedIndex += progress;
+        this._updateTriggers();
+        this.spyCheck();
+        return;
+      }
+      this._applySpySelection();
+    }
+
+    _applySpySelection() {
+      if (this.indexOf(this.selectedItem) != this._spyImmediateSelectedIndex) {
+        this.dispatchEvent(new CustomEvent('iron-scroll-spy-activate', {bubbles: true, composed: true}));
+        this.selectIndex(this._spyImmediateSelectedIndex);
+      }
+    }
+
+    _updateTriggers() {
+      var immediateItem = this.items[this._spyImmediateSelectedIndex];
+      if (!immediateItem) {
+        return;
+      }
+      var immediateTop = immediateItem.offsetTop;
+      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+      this.upperThreshold = this._spyImmediateSelectedIndex ? immediateTop - scrollTargetHalfHeight: null;
+      this.lowerThreshold = (this._spyImmediateSelectedIndex != this.items.length - 1) ? 
+        immediateTop + immediateItem.clientHeight - scrollTargetHalfHeight: null;
+    }
+
+    _resetDebounced() {
+      this._resetDebouncer = Polymer.Debouncer.debounce(
+        this._resetDebouncer,
+        Polymer.Async.timeOut.after(1),
+        this.reset.bind(this)
+      );
+    }
+
+    _findSpiedIndex() {
+      var scrollTargetHalfHeight = this.scrollTarget.clientHeight/2;
+      for (var i in this.items) {
+        var item = this.items[i];
+        var top = item.offsetTop;
+        var height = item.clientHeight;
+        if ( (this._scrollTop > top - scrollTargetHalfHeight)
+          && (this._scrollTop < top + height - scrollTargetHalfHeight) ) {
+          return this.indexOf(item);
+        }
+      }
+    }
+
+    _spyDisableChanged(newValue, oldValue) {
+      if (oldValue && !newValue) {
+        this.reset();
+      }
+    }
+
+    _scrollHandler() {
+      if (!this.spyDisabled && !this._spyCheckDebouncer.isActive()) {
+        this._spyCheckDebouncer = Polymer.Debouncer.debounce(
+          this._spyCheckDebouncer,
+          Polymer.Async.timeOut.after(this.spyCheckFrequence),
+          this.spyCheck.bind(this)
+        );
+      } 
+    }
+  }
+
+</script>

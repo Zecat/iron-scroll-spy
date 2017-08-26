@@ -13,11 +13,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>iron-scroll-spy Demo</title>
-    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../iron-scroll-spy.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   </head>
-    <style is="custom-style">
+
+  <custom-style>
+    <style>
       body {
         margin: 0;
       }
@@ -31,6 +33,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
       }
   </style>
+  </custom-style>
+
   <body unresolved>
 
     <demo-snippet class="centered">
@@ -47,15 +51,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         </style>
 
-        <iron-scroll-spy id="scrollSpy" activate-event="">
-          <div> <h1>Section A</h1> </div>
-          <div> <h1>Section B</h1> </div>
-          <div> <h1>Section C</h1> </div>
-          <div> <h1>Section D</h1> </div>
-          <div> <h1>Section E</h1> </div>
-          <div> <h1>Section F</h1> </div>
-          <div> <h1>Section G</h1> </div>
-          <div> <h1>Section H</h1> </div>
+        <iron-scroll-spy id="scrollSpy">
+          <div>Section A</div> 
+          <div>Section B</div> 
+          <div>Section C</div> 
+          <div>Section D</div> 
+          <div>Section E</div> 
+          <div>Section F</div> 
+          <div>Section G</div> 
+          <div>Section H</div> 
         </iron-scroll-spy>
       </template>
     </demo-snippet>
